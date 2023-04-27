@@ -1,0 +1,305 @@
+<!doctype html>
+<html>
+<head>
+<title>Caligo Timer - 00:00:00</title>
+<style type="text/css">
+* {
+	box-sizing: border-box;
+	font-family: "Trebuchet MS"; /* Set font here */
+	margin: 0;
+	padding: 0;
+}
+main {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+h1 {
+	font-size: 75px;
+	margin: 75px 75px 37.5px 75px;
+	white-space: nowrap;
+}
+
+h2 {
+	font-size: 55px;
+}
+
+h3 {
+	font-size: 25px;
+}
+
+h3 {
+	font-size: 16px;
+}
+
+.skill-info  {
+	align-items: center;
+	border: 1px solid #000;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	height: 120px;
+	justify-content: center;
+	list-style: none;
+	padding: 10px;
+	position: relative;
+	width: 500px;
+}
+
+li {
+	font-size: 16px;
+	height: 16px;
+	margin: 5px;
+	text-align: center;
+	transition: all .3s ease-in-out;
+	width: 480px;
+}
+
+.selected {
+	background: #fff;
+	font-size: 50px;
+	height: 100px;
+	left: 10px;
+	margin: 0;
+	padding-top: 25px;
+	position: absolute;
+	text-align: center;
+	top: 10px;
+	width: 480px;
+}
+
+.timer {
+	position: relative;
+	transition: all .5s ease-in-out;
+}
+
+.running {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	letter-spacing: 10px;
+	width: 500px;
+}
+
+.running div {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 33%;
+}
+
+#milliseconds {
+	bottom: 45px;
+	font-size: 13.25px;
+	position: absolute;
+	right: 125px;
+}
+
+.start, .stop, .reset {
+	align-items: center;
+	border: 2px solid #000;
+	border-radius: 10px;
+	display: flex;
+	height: 75px;
+	justify-content: center;
+	margin: 5px;
+	width: 200px;
+}
+
+.start {
+	background: rgba(0,255,0,.75);
+}
+
+.stop {
+	background: rgba(255,0,0,.75);
+}
+
+.reset {
+	background: rgba(125,125,125,.75);
+}
+
+.increment {
+	align-items: center;
+	background: rgba(69,69,255,.75);
+	border: 2px solid #000;
+	border-radius: 10px;
+	display: flex;
+	height: 48px;
+	justify-content: center;
+	margin: 5px;
+	width: 128px;
+}
+
+.start, .stop, .reset, .increment, .timer, .skill-info {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.buttons {
+	display: flex;
+}
+
+.buttons > *:hover {
+	cursor: pointer;
+} 
+
+.timer {
+	border: 1px solid #000;
+	border-radius: 10px;
+	padding: 2em 8em 2em 8em;
+}
+
+.flash {
+	background: rgba(255,0,0,.3);
+}
+</style>
+</head>
+<body>
+<main>
+	<h1>Caligo timer</h1>
+	<div class="timer">
+		<h2 class="running">
+			<div id="hours">00</div>:
+			<div id="minutes">00</div>:
+			<div id="seconds">00</div>
+		</h2>
+		<div id="milliseconds">:00</div>
+	</div>
+	<div class="buttons">
+		<div class="start" onclick="start()">
+			<h3>Start</h3>
+		</div>
+		<div class="stop" onclick="stop()">
+			<h3>Stop</h3>
+		</div>
+		<div class="reset" onclick="reset()">
+			<h3>Reset</h3>
+		</div>
+	</div>
+	<div class="buttons">
+		<div class="increment" onclick="increment(5)">
+			<h4>+5</h4>
+		</div>
+		<div class="increment" onclick="increment(10)">
+			<h4>+10</h4>
+		</div>
+		<div class="increment" onclick="increment(30)">
+			<h4>+30</h4>
+		</div>
+		<div class="increment" onclick="increment(60)">
+			<h4>+60</h4>
+		</div>
+	</div>
+	<ul class="skill-info">
+		<li id="bell" class="skill">Bell</li>
+		<li id="bomb" class="skill">Bomb</li>
+		<li id="fear" class="skill">Fear</li>
+		<li id="sky" class="skill">Sky</li>
+	</ul>
+</main>
+<script type="text/javascript">
+var timer;
+var startTime = 0, stopTime = 0;
+var stopped = true;
+var display = document.querySelector(".timer");
+var addTime = 0;
+
+function start() {
+	if (stopped) {
+		timer = setInterval(update, 1);
+		startTime = Date.now() - stopTime;
+		stopped = false;
+	}
+}
+
+function update() {
+	formatTime(Date.now() - startTime + addTime/* + (s * 1000) */); // s = seconds
+}
+
+function stop() {
+	clearInterval(timer);
+	stopTime = Date.now() - startTime;
+	stopped = true;
+}
+
+function increment(amount) {
+	addTime += amount*1000;
+	if (stopped) 
+		formatTime(stopTime + addTime);
+}
+
+function reset() {
+	clearInterval(timer);
+	formatTime(0);
+	startTime = 0;
+	stopTime = 0;
+	addTime = 0;
+	stopped = true;
+}
+
+var fear = document.querySelector("#fear");
+var bomb = document.querySelector("#bomb");
+var sky  = document.querySelector("#sky");
+var bell = document.querySelector("#bell");
+function formatTime(time) {
+	var h  = time / 1000 / 60 / 60 | 0;
+	var m  = time / 1000 / 60 % 60 | 0;
+	var s  = time / 1000 % 60 % 60 | 0;
+	var ms = time % 1000 % 60 % 60 | 0;
+
+	var total = time / 1000;
+
+	if ((total + 10 >= 60 && total < 60) || 
+	   ((total % 180)+10 >= 60 && total >= 180 && total % 180 < 60)) {
+		display.classList.add("flash");
+		fear.classList.add("selected");
+		bomb.classList.remove("selected");
+		sky.classList.remove("selected");
+		bell.classList.remove("selected");
+	} else if ((total + 10 >= 90 && total < 90) || 
+			  ((total % 120)+10 >= 90 && total >= 120 && total % 120 < 90)) {
+		display.classList.add("flash");
+		fear.classList.remove("selected");
+		bomb.classList.add("selected");
+		sky.classList.remove("selected");
+		bell.classList.remove("selected");
+	} else if ((total + 10 >= 120 && total < 120) || 
+			  ((total % 180)+10 >= 120 && total >= 180 && total % 180 < 120)) {
+		display.classList.add("flash");
+		fear.classList.remove("selected");
+		bomb.classList.remove("selected");
+		sky.classList.add("selected");
+		bell.classList.remove("selected");
+	} else if ((total + 10 >= 180 && total < 180) || 
+			  ((total % 180)+10 >= 180 && total >= 180 && total % 180 < 180)) {
+		display.classList.add("flash");
+		fear.classList.remove("selected");
+		bomb.classList.remove("selected");
+		sky.classList.remove("selected");
+		bell.classList.add("selected");
+	} else {
+		display.classList.remove("flash");
+		fear.classList.remove("selected");
+		bomb.classList.remove("selected");
+		sky.classList.remove("selected");
+		bell.classList.remove("selected");
+	}
+
+	document.getElementById("hours").innerHTML 			= (h < 10 ? "0" + h : h);
+	document.getElementById("minutes").innerHTML 		= (m < 10 ? "0" + m : m);
+	document.getElementById("seconds").innerHTML		= (s < 10 ? "0" + s : s);
+	document.getElementById("milliseconds").innerHTML	= (ms < 10 ? ":0" + ms : ":" + ms);
+	document.title = "Caligo Timer - " + (h < 10 ? "0" + h : h)+":"+
+							  (m < 10 ? "0" + m : m)+":"+
+							  (s < 10 ? "0" + s : s);
+
+
+}
+</script>
+</body>
+</html>
